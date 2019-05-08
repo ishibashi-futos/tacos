@@ -1,0 +1,11 @@
+{
+  "id": "com.mattermost.tacos",
+  "name": "tacos",
+  "description": "",
+  "version": "0.0.1",
+  "server": {
+      "executables": {
+          "linux-amd64": "plugin.exe"
+      }
+  }
+}
