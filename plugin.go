@@ -2,13 +2,16 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/mattermost/mattermost-server/plugin"
 )
 
-type HelloWorldPlugin struct {
+type TacosPlugin struct {
 	plugin.MattermostPlugin
 }
 
@@ -19,31 +22,16 @@ type Response struct {
 	IconUrl      string `json:"icon_url"`
 }
 
-type Request struct {
-	ChannelID   string `json:"channel_id"`
-	ChannelName string `json:"channel_name"`
-	Command     string `json:"command"`
-	ResponseUrl string `json:"response_url"`
-	TeamDomain  string `json:"team_domain"`
-	TeamId      string `json:"team_id"`
-	Text        string `json:"text"`
-	Token       string `json:"token"`
-	UserID      string `json:"user_id"`
-}
-
-func (p *HelloWorldPlugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {
+func (p *TacosPlugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {
 	bytes, _ := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
-	var req Request
-	err := json.Unmarshal(bytes, &req)
+
+	req, _ := parseRequest(string(bytes))
 
 	model := new(Response)
 	model.ResponseType = "in_channel"
-	if err != nil {
-		model.Text = "@here thank you !" + err.Error()
-	} else {
-		model.Text = "@here thank you !" + req.Text
-	}
+	s0, s1, _ := req.textToMessage()
+	model.Text = fmt.Sprintf("%s %s", s0, s1)
 	model.UserName = "tacos"
 	model.IconUrl = "https://www.mattermost.org/wp-content/uploads/2016/04/icon.png"
 	json, _ := json.Marshal(&model)
@@ -51,8 +39,17 @@ func (p *HelloWorldPlugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r
 	w.Write(json)
 }
 
-// This example demonstrates a plugin that handles HTTP requests which respond by greeting the
-// world.
+func (r Request) textToMessage() (s0 string, s1 string, err error) {
+	idx := strings.Index(r.Text, " ")
+	if idx == -1 {
+		err = errors.New("")
+	}
+	s0 = r.Text[:idx]
+	s1 = r.Text[idx+1:]
+
+	return
+}
+
 func main() {
-	plugin.ClientMain(&HelloWorldPlugin{})
+	plugin.ClientMain(&TacosPlugin{})
 }
