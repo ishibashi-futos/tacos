@@ -64,6 +64,18 @@ func TestGetPosts(t *testing.T) {
 	t.Log("TEST")
 }
 
+func TestBuildPostMessage(t *testing.T) {
+	s := map[string]int{}
+	s["userA"] = 10
+	s["userB"] = 9
+	s["userC"] = 8
+	s["userD"] = 7
+	s["userE"] = 6
+	s["hogehoge"] = 5
+	s["fugafuga"] = 0
+	t.Fatal(buildPostMessage(s))
+}
+
 // Util
 func PrintError(err *model.AppError) {
 	println("\tError Details:")

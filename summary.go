@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
+	"sort"
 
 	mm "github.com/mattermost/mattermost-server/model"
 )
 
 var client *mm.Client4
+type summary map[string]int
 
 func Summary() *Response {
 	res := &Response{}
@@ -47,4 +49,28 @@ func PostToSlice(pl *mm.PostList) []*mm.Post {
 		posts = append(posts, pl.Posts[id])
 	}
 	return posts
+}
+
+func summarize(posts []mm.Post) summary {
+	var s map[string]int
+	for _, post := range posts {
+		if _, ok := s[post.Message]; ok {
+			s[post.Message]++
+		} else {
+			s[post.Message] = 0
+		}
+	}
+	return s
+}
+
+func buildPostMessage(m summary) string {
+
+	var header = "| order | user | icon |\n| :-: | :-- | :-: |"
+
+	var values = []int{}
+	for _, v := range m {
+		values = append(values, v)
+	}
+	sort.Sort(sort.IntSlice(values))
+	return fmt.Sprintf("%s, %v", header, values)
 }
