@@ -19,7 +19,7 @@ type Response struct {
 	ResponseType string `json:"response_type"`
 	UserName     string `json:"tacos"`
 	Text         string `json:"text"`
-	IconUrl      string `json:"icon_url"`
+	IconURL      string `json:"icon_url"`
 }
 
 func (p *TacosPlugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {
@@ -33,7 +33,7 @@ func (p *TacosPlugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *htt
 	s0, s1, _ := req.textToMessage()
 	model.Text = fmt.Sprintf("%s %s", s0, s1)
 	model.UserName = "tacos"
-	model.IconUrl = "https://www.mattermost.org/wp-content/uploads/2016/04/icon.png"
+	model.IconURL = "https://www.mattermost.org/wp-content/uploads/2016/04/icon.png"
 	json, _ := json.Marshal(&model)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(json)
