@@ -21,9 +21,7 @@ func setEnv() {
 	PASSWORD = os.Getenv("MATTERMOST_PASSWD")
 }
 
-/*
-Can create the mattermost client.
-*/
+// Can create the mattermost client.
 func TestCreateClient(t *testing.T) {
 	setEnv()
 	_, err := createClient(URL, USERNAME, PASSWORD)
@@ -32,9 +30,7 @@ func TestCreateClient(t *testing.T) {
 	}
 }
 
-/*
-Can post.
-*/
+// Can post.
 func TestCreatePost(t *testing.T) {
 	setEnv()
 	// reference
@@ -54,6 +50,21 @@ func TestCreatePost(t *testing.T) {
 	}
 }
 
+func TestGetPosts(t *testing.T) {
+	setEnv()
+	client, _ := createClient(URL, USERNAME, PASSWORD)
+	pl, err := getPosts(client, CHANNNEL_ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	posts := PostToSlice(pl)
+	for _, post := range posts {
+		t.Log(post.Message)
+	}
+	t.Log("TEST")
+}
+
+// Util
 func PrintError(err *model.AppError) {
 	println("\tError Details:")
 	println("\t\t" + err.Message)
