@@ -63,14 +63,49 @@ func summarize(posts []mm.Post) summary {
 	return s
 }
 
+var (
+	icons = map[int]string {
+		0 : ":confetti_ball:",
+		1 : ":tada:",
+		2 : ":100:",
+		3 : ":ideograph_advantage:",
+		4 : ":beginner:",
+	}
+)
+
 func buildPostMessage(m summary) string {
+	var header = "@here Weekly awards! \n | order | user | icon |\n| :-: | :-- | :-: |\n"
 
-	var header = "| order | user | icon |\n| :-: | :-- | :-: |"
-
-	var values = []int{}
+	values := []int{}
+	var rank string
 	for _, v := range m {
 		values = append(values, v)
 	}
-	sort.Sort(sort.IntSlice(values))
-	return fmt.Sprintf("%s, %v", header, values)
+	sort.Sort(sort.Reverse(sort.IntSlice(values)))
+	for i :=0; i < 5; i++ {
+		if (len(values) <= 0) {
+			break
+		}
+		arr := m.valueToKey(values[len(values)-1])
+		for _, v := range arr {
+			rank += fmt.Sprintf("| %d | %s | %s |\n", i+1, v, icons[i])
+		}
+		values = popSlice(values)
+	}
+	return fmt.Sprintf("%s, %s", header, rank)
+}
+
+func (s summary) valueToKey(idx int) []string {
+	result := []string{}
+	for i, v := range s {
+		if (v == idx) {
+			result = append(result, i)
+		}
+	}
+	return result
+}
+
+func popSlice(slice []int) ([]int) {
+	slice = slice[:len(slice)-1]
+	return slice
 }
