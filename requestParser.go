@@ -17,10 +17,6 @@ type Request struct {
 	UserID      string `json:"user_id"`
 }
 
-func (r Request) String() string {
-	return r.Text
-}
-
 func parseRequest(text string) (*Request, error) {
 	r := &Request{}
 
