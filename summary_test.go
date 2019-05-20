@@ -1,23 +1,31 @@
 package main
 
 import (
+	"os"
 	"testing"
 
 	"github.com/mattermost/mattermost-server/model"
 )
 
-const (
-	URL         = "<@your mattermost url>" // your mattermost url
-	CHANNNEL_ID = "<@target channel id>"   // target channel id
-	USERNAME    = "<@your user name>"      // your user name
-	PASSWORD    = "<@your password>"       // your password
+var (
+	URL         string // your mattermost url
+	CHANNNEL_ID string // target channel id
+	USERNAME    string // your user name
+	PASSWORD    string // your password
 )
+
+func setEnv() {
+	URL = os.Getenv("MATTERMOST_SERVER_URL")
+	CHANNNEL_ID = os.Getenv("CHANNNEL_ID")
+	USERNAME = os.Getenv("MATTERMOST_USERNAME")
+	PASSWORD = os.Getenv("MATTERMOST_PASSWD")
+}
 
 /*
 Can create the mattermost client.
 */
 func TestCreateClient(t *testing.T) {
-
+	setEnv()
 	_, err := createClient(URL, USERNAME, PASSWORD)
 	if err != nil {
 		t.Fatal(err)
@@ -28,6 +36,7 @@ func TestCreateClient(t *testing.T) {
 Can post.
 */
 func TestCreatePost(t *testing.T) {
+	setEnv()
 	// reference
 	// https://github.com/mattermost/mattermost-bot-sample-golang/blob/master/bot_sample.go
 	client, err := createClient(URL, USERNAME, PASSWORD)
