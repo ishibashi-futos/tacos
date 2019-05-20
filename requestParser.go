@@ -9,9 +9,9 @@ type Request struct {
 	ChannelID   string `json:"channel_id"`
 	ChannelName string `json:"channel_name"`
 	Command     string `json:"command"`
-	ResponseUrl string `json:"response_url"`
+	ResponseURL string `json:"response_url"`
 	TeamDomain  string `json:"team_domain"`
-	TeamId      string `json:"team_id"`
+	TeamID      string `json:"team_id"`
 	Text        string `json:"text"`
 	Token       string `json:"token"`
 	UserID      string `json:"user_id"`
