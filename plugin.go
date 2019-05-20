@@ -15,13 +15,6 @@ type TacosPlugin struct {
 	plugin.MattermostPlugin
 }
 
-type Response struct {
-	ResponseType string `json:"response_type"`
-	UserName     string `json:"tacos"`
-	Text         string `json:"text"`
-	IconURL      string `json:"icon_url"`
-}
-
 func (p *TacosPlugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {
 	bytes, _ := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
