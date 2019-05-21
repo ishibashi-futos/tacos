@@ -9,8 +9,13 @@ import (
 )
 
 var client *mm.Client4
+
+// Max API fetch count.
+const FETCHCOUNT = 100
+
 type summary map[string]int
 
+// Summary is call from plug-in entry point.
 func Summary() *Response {
 	res := &Response{}
 	client, err := createClient("", "", "")
@@ -21,6 +26,7 @@ func Summary() *Response {
 	return res
 }
 
+// create WebAPI Client
 func createClient(url string, userName string, passwd string) (*mm.Client4, error) {
 	client = mm.NewAPIv4Client(url)
 	_, res := client.Login(userName, passwd)
@@ -30,8 +36,9 @@ func createClient(url string, userName string, passwd string) (*mm.Client4, erro
 	return client, nil
 }
 
-func getPosts(c *mm.Client4, channel string) (*mm.PostList, error){
-	post, res := c.GetPostsForChannel(channel, 0, 10, "")
+// getPosts
+func getPosts(c *mm.Client4, channel string) (*mm.PostList, error) {
+	post, res := c.GetPostsForChannel(channel, 0, FETCHCOUNT, "")
 	if res.Error != nil {
 		return nil, createFmtError(res)
 	}
@@ -39,10 +46,12 @@ func getPosts(c *mm.Client4, channel string) (*mm.PostList, error){
 	return post, nil
 }
 
+// util.
 func createFmtError(e *mm.Response) error {
 	return fmt.Errorf("Error :%s, [code: %d]", e.Error.Message, e.StatusCode)
 }
 
+// PostToSlice --> Not required for the latest version.
 func PostToSlice(pl *mm.PostList) []*mm.Post {
 	var posts []*mm.Post
 	for _, id := range pl.Order {
@@ -51,6 +60,7 @@ func PostToSlice(pl *mm.PostList) []*mm.Post {
 	return posts
 }
 
+// Summarize action.
 func summarize(posts []mm.Post) summary {
 	var s map[string]int
 	for _, post := range posts {
@@ -64,15 +74,16 @@ func summarize(posts []mm.Post) summary {
 }
 
 var (
-	icons = map[int]string {
-		0 : ":confetti_ball:",
-		1 : ":tada:",
-		2 : ":100:",
-		3 : ":ideograph_advantage:",
-		4 : ":beginner:",
+	icons = map[int]string{
+		0: ":confetti_ball:",
+		1: ":tada:",
+		2: ":100:",
+		3: ":ideograph_advantage:",
+		4: ":beginner:",
 	}
 )
 
+// Build post message from summary data.
 func buildPostMessage(m summary) string {
 	var header = "@here Weekly awards! \n | order | user | icon |\n| :-: | :-- | :-: |\n"
 
@@ -82,8 +93,8 @@ func buildPostMessage(m summary) string {
 		values = append(values, v)
 	}
 	sort.Sort(sort.Reverse(sort.IntSlice(values)))
-	for i :=0; i < 5; i++ {
-		if (len(values) <= 0) {
+	for i := 0; i < 5; i++ {
+		if len(values) <= 0 {
 			break
 		}
 		arr := m.valueToKey(values[len(values)-1])
@@ -95,17 +106,18 @@ func buildPostMessage(m summary) string {
 	return fmt.Sprintf("%s, %s", header, rank)
 }
 
+// Find key from value.
 func (s summary) valueToKey(idx int) []string {
 	result := []string{}
 	for i, v := range s {
-		if (v == idx) {
+		if v == idx {
 			result = append(result, i)
 		}
 	}
 	return result
 }
 
-func popSlice(slice []int) ([]int) {
+func popSlice(slice []int) []int {
 	slice = slice[:len(slice)-1]
 	return slice
 }
