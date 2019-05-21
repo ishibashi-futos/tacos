@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"sort"
+	"strings"
 
 	mm "github.com/mattermost/mattermost-server/model"
 )
@@ -12,17 +13,25 @@ var client *mm.Client4
 
 // Max API fetch count.
 const FETCHCOUNT = 100
+const MM_URL = "@YOURENV"
+const UN = "@YOURENV"
+const PW = "@YOURENV"
 
 type summary map[string]int
 
 // Summary is call from plug-in entry point.
-func Summary() *Response {
+func Summary(req Request) *Response {
 	res := &Response{}
-	client, err := createClient("", "", "")
+	client, err := createClient(MM_URL, UN, PW)
 	if err != nil {
 		log.Fatal(err)
 	}
-	getPosts(client, "")
+	pl, _ := getPosts(client, req.ChannelID)
+	posts := PostToSlice(pl)
+	s := summarize(posts)
+	if len(s) != 0 {
+		res.Text = buildPostMessage(s)
+	}
 	return res
 }
 
@@ -61,13 +70,17 @@ func PostToSlice(pl *mm.PostList) []*mm.Post {
 }
 
 // Summarize action.
-func summarize(posts []mm.Post) summary {
-	var s map[string]int
+func summarize(posts []*mm.Post) summary {
+	var s map[string]int = map[string]int{}
 	for _, post := range posts {
-		if _, ok := s[post.Message]; ok {
-			s[post.Message]++
+		user := findUserFromPost(post.Message)
+		if user == "" {
+			break
+		}
+		if _, ok := s[user]; ok {
+			s[user]++
 		} else {
-			s[post.Message] = 0
+			s[user] = 0
 		}
 	}
 	return s
@@ -85,7 +98,7 @@ var (
 
 // Build post message from summary data.
 func buildPostMessage(m summary) string {
-	var header = "@here Weekly awards! \n | order | user | icon |\n| :-: | :-- | :-: |\n"
+	var header = "@here Weekly awards! \n | order | user | icon |\n| :-: | :-- | :-: |\n\n"
 
 	values := []int{}
 	var rank string
@@ -120,4 +133,13 @@ func (s summary) valueToKey(idx int) []string {
 func popSlice(slice []int) []int {
 	slice = slice[:len(slice)-1]
 	return slice
+}
+
+// find target user
+func findUserFromPost(message string) string {
+	idx := strings.Index(message, " ")
+	if idx == -1 {
+		return ""
+	}
+	return message[:idx]
 }

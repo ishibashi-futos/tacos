@@ -61,7 +61,6 @@ func TestGetPosts(t *testing.T) {
 	for _, post := range posts {
 		t.Log(post.Message)
 	}
-	t.Log("TEST")
 }
 
 func TestBuildPostMessage(t *testing.T) {
@@ -73,7 +72,14 @@ func TestBuildPostMessage(t *testing.T) {
 	s["userE"] = 6
 	s["hogehoge"] = 5
 	s["fugafuga"] = 0
-	t.Fatal(buildPostMessage(s))
+	t.Log(buildPostMessage(s))
+}
+
+func TestSummary(t *testing.T) {
+	req := &Request{}
+	req.ChannelID = CHANNNEL_ID
+	res := Summary(*req)
+	t.Log(res.Text)
 }
 
 // Util
