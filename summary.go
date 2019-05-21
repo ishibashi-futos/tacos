@@ -103,7 +103,7 @@ func buildPostMessage(m summary) string {
 		}
 		values = popSlice(values)
 	}
-	return fmt.Sprintf("%s, %s", header, rank)
+	return fmt.Sprintf("%s%s", header, rank)
 }
 
 // Find key from value.
