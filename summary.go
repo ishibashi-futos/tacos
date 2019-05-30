@@ -11,12 +11,6 @@ import (
 
 var client *mm.Client4
 
-// Max API fetch count.
-const FETCHCOUNT = 100
-const MM_URL = "@YOURENV"
-const UN = "@YOURENV"
-const PW = "@YOURENV"
-
 type summary map[string]int
 
 // Summary is call from plug-in entry point.
@@ -35,15 +29,6 @@ func Summary(req Request) *Response {
 	return res
 }
 
-// create WebAPI Client
-func createClient(url string, userName string, passwd string) (*mm.Client4, error) {
-	client = mm.NewAPIv4Client(url)
-	_, res := client.Login(userName, passwd)
-	if res.Error != nil {
-		return nil, createFmtError(res)
-	}
-	return client, nil
-}
 
 // getPosts
 func getPosts(c *mm.Client4, channel string) (*mm.PostList, error) {
@@ -53,11 +38,6 @@ func getPosts(c *mm.Client4, channel string) (*mm.PostList, error) {
 	}
 
 	return post, nil
-}
-
-// util.
-func createFmtError(e *mm.Response) error {
-	return fmt.Errorf("Error :%s, [code: %d]", e.Error.Message, e.StatusCode)
 }
 
 // PostToSlice --> Not required for the latest version.
