@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
 
@@ -21,12 +21,12 @@ func (p *TacosPlugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *htt
 
 	req, _ := parseRequest(string(bytes))
 
-	model := new(Response)
-	model.ResponseType = "in_channel"
 	s0, s1, _ := req.textToMessage()
-	model.Text = fmt.Sprintf("# :o_reiwa: \n %s %s", s0, s1)
-	model.UserName = "お令和"
-	model.IconURL = "https://www.mattermost.org/wp-content/uploads/2016/04/icon.png"
+	if err := thanksMessagePost(s0, s1, req.ChannelID); err != nil {
+		log.Fatal(err)
+	}
+	model := ephemeralPost(s0)
+
 	json, _ := json.Marshal(&model)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(json)
