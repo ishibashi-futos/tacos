@@ -24,8 +24,8 @@ func (p *TacosPlugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *htt
 	model := new(Response)
 	model.ResponseType = "in_channel"
 	s0, s1, _ := req.textToMessage()
-	model.Text = fmt.Sprintf("%s %s", s0, s1)
-	model.UserName = "tacos"
+	model.Text = fmt.Sprintf("# :o_reiwa: \n %s %s", s0, s1)
+	model.UserName = "お令和"
 	model.IconURL = "https://www.mattermost.org/wp-content/uploads/2016/04/icon.png"
 	json, _ := json.Marshal(&model)
 	w.Header().Set("Content-Type", "application/json")
