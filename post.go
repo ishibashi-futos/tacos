@@ -20,6 +20,11 @@ func thanksMessagePost(destination string, message string, channelID string) err
 	if err != nil {
 		return err
 	}
+	defer func() {
+		if _, res := client.Logout(); res.Error != nil {
+			log.Fatal(createFmtError(res))
+		}
+	}()
 	newPost := mm.Post{
 		UserId:    "tokumaro",
 		ChannelId: channelID,
