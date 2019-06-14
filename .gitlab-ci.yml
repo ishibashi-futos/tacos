@@ -1,0 +1,14 @@
+image: golang:1.11.5
+
+stages:
+  - build
+ 
+build_docker_image:
+  stage: build
+  script:
+    - make repackage
+  artifacts:
+    untracked: false
+    expire_in: 30 days
+    paths:
+      - ./plugin.tar.gz
