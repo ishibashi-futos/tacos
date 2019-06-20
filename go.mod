@@ -11,6 +11,7 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/mattermost/mattermost-server v5.9.0+incompatible
 	github.com/mattermost/viper v1.0.4 // indirect
+	github.com/mattn/go-sqlite3 v1.10.0
 	github.com/mitchellh/go-testing-interface v1.0.0 // indirect
 	github.com/nicksnyder/go-i18n v1.10.0 // indirect
 	github.com/pborman/uuid v1.2.0 // indirect
