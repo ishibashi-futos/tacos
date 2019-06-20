@@ -16,7 +16,7 @@ func ephemeralPost(destination string) Response {
 }
 
 func thanksMessagePost(destination string, message string, channelID string) error {
-	client, err := createClient("XXX", "XXX", "XXX")
+	client, err := createClient(MM_URL, UN, PW)
 	if err != nil {
 		return err
 	}
