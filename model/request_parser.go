@@ -1,23 +1,11 @@
-package main
+package model
 
 import (
 	"net/url"
 	"strings"
 )
 
-type Request struct {
-	ChannelID   string `json:"channel_id"`
-	ChannelName string `json:"channel_name"`
-	Command     string `json:"command"`
-	ResponseURL string `json:"response_url"`
-	TeamDomain  string `json:"team_domain"`
-	TeamID      string `json:"team_id"`
-	Text        string `json:"text"`
-	Token       string `json:"token"`
-	UserID      string `json:"user_id"`
-}
-
-func parseRequest(text string) (*Request, error) {
+func ParseRequest(text string) (*Request, error) {
 	r := &Request{}
 
 	params := strings.Split(strings.Replace(text, "!", "", 1), "&")
@@ -33,8 +21,20 @@ func parseRequest(text string) (*Request, error) {
 			r.ChannelName = value
 		case "command":
 			r.Command = value
+		case "response_url":
+			r.ResponseURL = value
+		case "team_domain":
+			r.TeamDomain = value
+		case "team_id":
+			r.TeamID = value
 		case "text":
 			r.Text = value
+		case "token":
+			r.Token = value
+		case "user_id":
+			r.UserID = value
+		case "user_name":
+			r.UserName = value
 		}
 	}
 

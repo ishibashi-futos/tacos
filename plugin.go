@@ -2,26 +2,33 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/mattermost/mattermost-server/plugin"
+
+	"thanks/model"
+	"thanks/repository"
 )
 
-type TacosPlugin struct {
+type ThanksPlugin struct {
 	plugin.MattermostPlugin
 }
 
-func (p *TacosPlugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {
+func (p *ThanksPlugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {
 	bytes, _ := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 
-	req, _ := parseRequest(string(bytes))
+	req, _ := model.ParseRequest(string(bytes))
 
-	s0, s1, _ := req.textToMessage()
+	s0, s1, _ := req.TextToMessage()
+	repo, err := repository.NewThanksRepository()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer repo.Close()
+	repo.Save(req.UserID, s0, s1)
 	if err := thanksMessagePost(s0, s1, req.ChannelID); err != nil {
 		log.Fatal(err)
 	}
@@ -32,17 +39,6 @@ func (p *TacosPlugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *htt
 	w.Write(json)
 }
 
-func (r Request) textToMessage() (s0 string, s1 string, err error) {
-	idx := strings.Index(r.Text, " ")
-	if idx == -1 {
-		err = errors.New("")
-	}
-	s0 = r.Text[:idx]
-	s1 = r.Text[idx+1:]
-
-	return
-}
-
 func main() {
-	plugin.ClientMain(&TacosPlugin{})
+	plugin.ClientMain(&ThanksPlugin{})
 }
